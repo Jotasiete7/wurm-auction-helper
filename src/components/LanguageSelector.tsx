@@ -10,7 +10,7 @@ export function LanguageSelector() {
   const { language, setLanguage } = useLanguage()
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center gap-1 text-sm bg-wurm-panel/80 backdrop-blur-sm border border-wurm-border rounded-lg px-2 py-1">
+    <div className="flex items-center gap-1 text-sm bg-wurm-panel/80 backdrop-blur-sm border border-wurm-border rounded-lg px-2 py-1">
       {languages.map((lang, index) => (
         <span key={lang.code} className="flex items-center">
           <button

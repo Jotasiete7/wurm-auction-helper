@@ -1,5 +1,6 @@
 import { ExternalLink, RefreshCcw, ScrollText, Star, User } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import EcosystemDropdown from './components/EcosystemDropdown'
 import { LanguageSelector } from './components/LanguageSelector'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import type { TranslationKey } from './i18n/translations'
@@ -215,7 +216,10 @@ function AuctionApp() {
 
   return (
     <div className="min-h-screen bg-wurm-bg font-sans text-wurm-text">
-      <LanguageSelector />
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <EcosystemDropdown />
+        <LanguageSelector />
+      </div>
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <header className="text-center mb-8">
