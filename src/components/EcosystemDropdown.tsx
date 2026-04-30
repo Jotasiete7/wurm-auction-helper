@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked, Hammer, Shield, Gavel } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 // ─────────────────────────────────────────────────────────────
 // CANONICAL ECOSYSTEM DROPDOWN — A Guilda (Auction Version)
@@ -7,63 +8,64 @@ import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked, Hammer, Shield
 // Ao replicar em outro projeto, altere apenas `CURRENT_TOOL`.
 // ─────────────────────────────────────────────────────────────
 
-const ECOSYSTEM_TOOLS = [
-    {
-        id: 'portal',
-        label: 'Portal',
-        href: 'https://wurm-aguild-site.pages.dev',
-        icon: Home,
-    },
-    {
-        id: 'analytics',
-        label: 'Analytics',
-        href: 'https://wurm-analytics-journal.pages.dev',
-        icon: LineChart,
-    },
-    {
-        id: 'recipes',
-        label: 'Receitas',
-        href: 'https://wurm-recipe-tool.pages.dev',
-        icon: BookOpen,
-    },
-    {
-        id: 'mining',
-        label: 'Mineração',
-        href: 'https://wurm-mining-tool.pages.dev',
-        icon: Pickaxe,
-    },
-    {
-        id: 'liturgy',
-        label: 'Liturgy',
-        href: 'https://wurm-liturgy.pages.dev',
-        icon: BookMarked,
-    },
-    {
-        id: 'carpentry',
-        label: 'Carpentry',
-        href: 'https://wurm-carpentry-tool.pages.dev',
-        icon: Hammer,
-    },
-    {
-        id: 'auction',
-        label: 'Leilões',
-        href: '/',
-        icon: Gavel,
-    },
-    {
-        id: 'badges',
-        label: 'Guilda Badges',
-        href: 'https://wurm-aguilda-badges.pages.dev',
-        icon: Shield,
-    },
-] as const;
-
 // ← Change this to the id of the current project
 const CURRENT_TOOL = 'auction';
 
 const EcosystemDropdown: React.FC = () => {
+    const { language } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
+
+    const ECOSYSTEM_TOOLS = [
+        {
+            id: 'portal',
+            label: 'Portal',
+            href: 'https://wurm-aguild-site.pages.dev',
+            icon: Home,
+        },
+        {
+            id: 'analytics',
+            label: 'Analytics',
+            href: 'https://wurm-analytics-journal.pages.dev',
+            icon: LineChart,
+        },
+        {
+            id: 'recipes',
+            label: language === 'pt' ? 'Receitas' : 'Recipes',
+            href: 'https://wurm-recipe-tool.pages.dev',
+            icon: BookOpen,
+        },
+        {
+            id: 'mining',
+            label: language === 'pt' ? 'Mineração' : 'Mining',
+            href: 'https://wurm-mining-tool.pages.dev',
+            icon: Pickaxe,
+        },
+        {
+            id: 'liturgy',
+            label: 'Liturgy',
+            href: 'https://wurm-liturgy.pages.dev',
+            icon: BookMarked,
+        },
+        {
+            id: 'carpentry',
+            label: 'Carpentry',
+            href: 'https://wurm-carpentry-tool.pages.dev',
+            icon: Hammer,
+        },
+        {
+            id: 'auction',
+            label: language === 'pt' ? 'Leilões' : 'Auction',
+            href: '/',
+            icon: Gavel,
+        },
+        {
+            id: 'badges',
+            label: 'Guilda Badges',
+            href: 'https://wurm-aguilda-badges.pages.dev',
+            icon: Shield,
+        },
+    ];
 
     // Close on outside click
     useEffect(() => {
@@ -80,7 +82,7 @@ const EcosystemDropdown: React.FC = () => {
         <div ref={ref} className="relative">
             <button
                 onClick={() => setIsOpen(prev => !prev)}
-                title="Ecossistema A Guilda"
+                title={language === 'pt' ? 'Ecossistema A Guilda' : 'A Guilda Ecosystem'}
                 className={`p-2 rounded-full transition-colors ${isOpen
                     ? 'text-wurm-accent bg-wurm-panel'
                     : 'text-wurm-muted hover:text-wurm-text hover:bg-wurm-panel'
@@ -103,7 +105,9 @@ const EcosystemDropdown: React.FC = () => {
                             >
                                 <Icon size={14} />
                                 <span>{label}</span>
-                                <span className="ml-auto text-[9px] opacity-60">aqui</span>
+                                <span className="ml-auto text-[9px] opacity-60">
+                                    {language === 'pt' ? 'aqui' : 'here'}
+                                </span>
                             </div>
                         ) : (
                             <a
