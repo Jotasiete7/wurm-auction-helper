@@ -7,7 +7,7 @@ Web app that aggregates **Wurm Online** forum auctions (NFI and SFI), enriches e
 - **Northern Freedom Isles (NFI)** and **Southern Freedom Isles (SFI)** — loads the current listing page of the official forum auction boards (pinned help topics are skipped on list pages).
 - **Favorites** — loads saved topic URLs from `localStorage` and fetches each thread server-side.
 - Per auction: title, author, last activity time, starting bid, timer status (from `timer_*.svg` in the post), latest reply snippet when the thread has more than one comment, and a visual hint when less than 24 hours remain on an active timer.
-- **i18n** — English and Portuguese (fixed corner language toggle, same idea as the Wurm Carpentry Tool).
+- **i18n** — English and Portuguese (fixed corner language toggle).
 - **Favorites first** — starred auctions are sorted to the top when browsing NFI/SFI lists.
 
 ## Tech stack
