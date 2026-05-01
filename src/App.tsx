@@ -2,9 +2,9 @@ import { ExternalLink, RefreshCcw, ScrollText, Star, User } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import type { TranslationKey } from './i18n/translations'
-import { Header as AgHeader } from '@antigravity/layout/Header'
-import { LanguageSwitch } from '@antigravity/modules/LanguageSwitch'
-import agStyles from '@antigravity/layout/Header.module.css'
+import { Header as AgHeader } from '@ecossistema-guilda/layout/Header'
+import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch'
+import agStyles from '@ecossistema-guilda/layout/Header.module.css'
 
 interface AuctionTopic {
   id: string
@@ -219,7 +219,7 @@ function AuctionApp() {
     <div className="min-h-screen bg-wurm-bg font-sans text-wurm-text">
       <AgHeader 
         currentToolId="auction-helper"
-        brandSubName={t('title')}
+        brandSubName="Auction Helper"
         lang={language as 'en' | 'pt'}
         extraModules={
           <LanguageSwitch 
