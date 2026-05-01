@@ -14,8 +14,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@antigravity/*": ["../antigravity/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["src", "../antigravity/**/*.ts", "../antigravity/**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,9 +1,10 @@
 import { ExternalLink, RefreshCcw, ScrollText, Star, User } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import EcosystemDropdown from './components/EcosystemDropdown'
-import { LanguageSelector } from './components/LanguageSelector'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import type { TranslationKey } from './i18n/translations'
+import { Header as AgHeader } from '@antigravity/layout/Header'
+import { LanguageSwitch } from '@antigravity/modules/LanguageSwitch'
+import agStyles from '@antigravity/layout/Header.module.css'
 
 interface AuctionTopic {
   id: string
@@ -97,7 +98,7 @@ function getTimerInfo(timerAlt: string | undefined, t: TFn) {
 }
 
 function AuctionApp() {
-  const { t, language } = useLanguage()
+  const { t, language, setLanguage } = useLanguage()
   const tRef = useRef(t)
   tRef.current = t
 
@@ -216,19 +217,21 @@ function AuctionApp() {
 
   return (
     <div className="min-h-screen bg-wurm-bg font-sans text-wurm-text">
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-        <EcosystemDropdown />
-        <LanguageSelector />
-      </div>
+      <AgHeader 
+        currentToolId="auction-helper"
+        brandSubName={t('title')}
+        lang={language as 'en' | 'pt'}
+        extraModules={
+          <LanguageSwitch 
+            lang={language} 
+            onLanguageChange={(l) => setLanguage(l as 'en' | 'pt')} 
+            styles={agStyles}
+          />
+        }
+      />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <ScrollText className="w-10 h-10 text-wurm-accent" />
-            <h1 className="font-serif text-4xl font-bold">{t('title')}</h1>
-          </div>
-          <p className="text-wurm-muted text-lg">{subtitle}</p>
-        </header>
+        {/* Section title removed as it's in the Header */}
 
         <section className="bg-wurm-panel border border-wurm-border rounded-xl p-5 mb-6">
           <div className="flex flex-wrap gap-3 items-center justify-between">
@@ -377,15 +380,7 @@ function AuctionApp() {
             {t('footer').split('{link}')[1]}
           </p>
           <p>
-            {t('developedBy')}{' '}
-            <a
-              href="https://wurm-aguild-site.pages.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-wurm-accent hover:underline"
-            >
-              A Guilda
-            </a>
+            {/* Redundant ecosystem link removed */}
           </p>
         </footer>
       </div>

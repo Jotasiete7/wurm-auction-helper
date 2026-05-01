@@ -2,6 +2,7 @@ import { load } from 'cheerio'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { defineConfig, Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 interface AuctionTopic {
   id: string
@@ -263,4 +264,14 @@ function scraperApiPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), scraperApiPlugin()],
+  resolve: {
+    alias: {
+      '@antigravity': path.resolve(__dirname, '../antigravity')
+    }
+  },
+  server: {
+    fs: {
+      allow: ['..']
+    }
+  }
 })
