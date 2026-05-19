@@ -1,10 +1,11 @@
-import { ExternalLink, RefreshCcw, ScrollText, Star, User } from 'lucide-react'
+import { Header as AgHeader } from '@ecossistema-guilda/layout/Header'
+import agStyles from '@ecossistema-guilda/layout/Header.module.css'
+import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch'
+import { ExternalLink, RefreshCcw, Search, Star, User } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import type { TranslationKey } from './i18n/translations'
-import { Header as AgHeader } from '@ecossistema-guilda/layout/Header'
-import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch'
-import agStyles from '@ecossistema-guilda/layout/Header.module.css'
+import { parseTimerTimestamp } from './lib/timer'
 
 interface AuctionTopic {
   id: string
@@ -60,16 +61,14 @@ function getTimerInfo(timerAlt: string | undefined, t: TFn) {
     }
   }
 
-  const timestampMatch = timerAlt.match(/timer_(\d+)\.svg/i)
-  if (!timestampMatch) {
+  const timerTimestamp = parseTimerTimestamp(timerAlt)
+  if (timerTimestamp === null) {
     return {
       statusText: t('timerInvalidFormat'),
       isActive: false,
       activeTimeHighlight: false,
     }
   }
-
-  const timerTimestamp = Number(timestampMatch[1])
   const nowTimestamp = Math.floor(Date.now() / 1000)
   const diffSeconds = timerTimestamp - nowTimestamp
   const absSeconds = Math.abs(diffSeconds)
@@ -108,6 +107,7 @@ function AuctionApp() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const setSource = useCallback((next: AuctionSource) => {
     setSourceState(next)
@@ -142,6 +142,17 @@ function AuctionApp() {
     }
     return [...favorites, ...others]
   }, [topics, favoriteHrefs])
+
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+
+  const filteredTopics = useMemo(() => {
+    if (!normalizedSearch) return sortedTopics
+    return sortedTopics.filter(
+      (topic) =>
+        topic.title.toLowerCase().includes(normalizedSearch) ||
+        topic.author.toLowerCase().includes(normalizedSearch),
+    )
+  }, [sortedTopics, normalizedSearch])
 
   const loadAuctions = useCallback(async () => {
     setLoading(true)
@@ -212,8 +223,16 @@ function AuctionApp() {
     }
     const scopeTranslation: TranslationKey =
       source === 'sfi' ? 'scopeSfi' : source === 'nfi' ? 'scopeNfi' : 'scopeFavorites'
-    return t('statusCount', { count: topics.length, scope: t(scopeTranslation) })
-  }, [error, language, loading, source, t, topics.length])
+    const scope = t(scopeTranslation)
+    if (normalizedSearch) {
+      return t('statusCountFiltered', {
+        shown: filteredTopics.length,
+        total: topics.length,
+        scope,
+      })
+    }
+    return t('statusCount', { count: topics.length, scope })
+  }, [error, filteredTopics.length, language, loading, normalizedSearch, source, t, topics.length])
 
   return (
     <div className="min-h-screen bg-wurm-bg font-sans text-wurm-text">
@@ -234,16 +253,36 @@ function AuctionApp() {
         {/* Section title removed as it's in the Header */}
 
         <section className="bg-wurm-panel border border-wurm-border rounded-xl p-5 mb-6">
-          <div className="flex flex-wrap gap-3 items-center justify-between">
-            <div className="space-y-1">
-              <p className={`text-sm ${error ? 'text-red-400' : 'text-wurm-muted'}`}>{statusText}</p>
-              {lastUpdatedDisplay && (
-                <p className="text-xs text-wurm-muted">
-                  {t('lastUpdatedLabel')} {lastUpdatedDisplay}
-                </p>
-              )}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <div className="relative w-full">
+                <label className="sr-only" htmlFor="auction-search">
+                  {t('searchLabel')}
+                </label>
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-wurm-muted"
+                  aria-hidden
+                />
+                <input
+                  id="auction-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t('searchPlaceholder')}
+                  className="w-full rounded-lg border border-wurm-border bg-wurm-bg py-2 pl-9 pr-3 text-sm text-wurm-text placeholder:text-wurm-muted hover:border-wurm-accent focus:outline-none focus:ring-1 focus:ring-wurm-accent"
+                />
+              </div>
+              <p className={`text-base ${error ? 'text-red-400' : 'text-wurm-muted'}`}>
+                {statusText}
+                {lastUpdatedDisplay && (
+                  <>
+                    {' '}
+                    {t('lastUpdatedLabel')} {lastUpdatedDisplay}
+                  </>
+                )}
+              </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
               <label className="sr-only" htmlFor="forum-source">
                 {t('forumSourceLabel')}
               </label>
@@ -271,7 +310,10 @@ function AuctionApp() {
         </section>
 
         <section className="space-y-3">
-          {sortedTopics.map((topic) => {
+          {!loading && !error && topics.length > 0 && filteredTopics.length === 0 && (
+            <p className="text-center text-sm text-wurm-muted py-8">{t('searchNoResults')}</p>
+          )}
+          {filteredTopics.map((topic) => {
             const isFavorite = favoriteHrefs.has(topic.href)
             const timer = getTimerInfo(topic.timerAlt, t)
             return (

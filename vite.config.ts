@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 import { defineConfig, Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { findTimerAlt } from './src/lib/timer'
 
 interface AuctionTopic {
   id: string
@@ -61,7 +62,6 @@ function parseTopicDetails(
   const $ = load(html)
   const bodyText = $('body').text()
   const startingBidMatch = bodyText.match(/Starting bid:\s*([^\n\r]+)/i)
-  const timerImage = $('img.ipsImage[alt*="timer_"], img.ipsImage[src*="timer_"]').first()
   const commentNodes = $("div[data-role='commentContent']")
   const hasReplies = commentNodes.length > 1
 
@@ -86,7 +86,7 @@ function parseTopicDetails(
 
   return {
     startingBid: startingBidMatch?.[1]?.trim(),
-    timerAlt: timerImage.attr('alt')?.trim(),
+    timerAlt: findTimerAlt($),
     lastCommentMessage,
     lastCommentAuthor,
   }
