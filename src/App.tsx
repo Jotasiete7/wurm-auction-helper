@@ -6,6 +6,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import type { TranslationKey } from './i18n/translations'
 import { parseTimerTimestamp } from './lib/timer'
+import { HistoryView } from './components/HistoryView'
+
+type AppView = 'live' | 'history'
 
 interface AuctionTopic {
   id: string
@@ -108,6 +111,7 @@ function AuctionApp() {
   const [error, setError] = useState<string | null>(null)
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [view, setView] = useState<AppView>('live')
 
   const setSource = useCallback((next: AuctionSource) => {
     setSourceState(next)
@@ -250,8 +254,35 @@ function AuctionApp() {
       />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Section title removed as it's in the Header */}
+        <nav className="mb-6 flex gap-2 border-b border-wurm-border" aria-label={t('viewTabsLabel')}>
+          <button
+            type="button"
+            onClick={() => setView('live')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              view === 'live'
+                ? 'border-wurm-accent text-wurm-accent'
+                : 'border-transparent text-wurm-muted hover:text-wurm-text'
+            }`}
+          >
+            {t('viewLive')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('history')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              view === 'history'
+                ? 'border-wurm-accent text-wurm-accent'
+                : 'border-transparent text-wurm-muted hover:text-wurm-text'
+            }`}
+          >
+            {t('viewHistory')}
+          </button>
+        </nav>
 
+        {view === 'history' ? (
+          <HistoryView />
+        ) : (
+          <>
         <section className="bg-wurm-panel border border-wurm-border rounded-xl p-5 mb-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex min-w-0 flex-1 flex-col gap-3">
@@ -407,6 +438,8 @@ function AuctionApp() {
             )
           })}
         </section>
+          </>
+        )}
 
         <footer className="text-center mt-12 text-wurm-muted text-sm space-y-1">
           <p>
